@@ -5,6 +5,18 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://127.0.0.1:8761/eureka/
+      
+hystrix:
+  threadpool:
+    default:
+      coreSize: 1 ##并发执行的最大线程数，默认10
+      maxQueueSize: 1 ##BlockingQueue的最大队列数
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 1000      
 
 zuul:
   #Service will be mapped under the /api URI
@@ -12,14 +24,21 @@ zuul:
 #  Uncomment to disable auto-registering all services read from Eureka
 #  ignoredServices: '*'
   routes:
+      #这种写发不会触发hystrix,因为通过没有serviceId。不会从注册中心获取服务列表，触发ribbon相关的对象
     customer-by-address:
       path: /customer-by-address/**
       url: http://localhost:9098
+     #这种写发会触发hystrix,因为通过ribbon，负载均衡后启用了hystrix. 
     customer-by-service:
       path: /customer-by-service/**
       serviceId: CUSTOMER-SERVICE
     static:
       path: /static/**
+     #这种写发不会触发hystrix,有serviceId。但是也有 url，不会从注册中心获取服务列表，触发ribbon相关的对象  
+    pe2:
+      path: /baidu/**
+      url: http://www.baidu.com
+      serviceId: CUSTOMER-SERVICE  
 
 spring:
   application:
