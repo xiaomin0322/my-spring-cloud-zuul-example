@@ -1,4 +1,11 @@
 server:
+  connection-timeout: 1
+  tomcat:
+    uri-encoding: UTF-8
+    max-threads: 1
+    max-connections: 1000
+    min-spare-threads: 1
+    accept-count: 200
   port: 9090
 
 eureka:
